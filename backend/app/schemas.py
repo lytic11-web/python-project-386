@@ -1,6 +1,6 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
-from pydantic import BaseModel, Field, EmailStr, ConfigDict
+from pydantic import BaseModel, Field, EmailStr, ConfigDict, field_serializer
 
 
 def to_camel(s: str) -> str:
@@ -103,3 +103,13 @@ class Booking(BookingBase):
     event_type_name: str = Field(alias="eventTypeName")
     end_time: datetime = Field(alias="endTime")
     created_at: datetime = Field(alias="createdAt")
+
+    @staticmethod
+    def _ensure_utc(v: datetime) -> str:
+        if v.tzinfo is None:
+            v = v.replace(tzinfo=timezone.utc)
+        return v.isoformat()
+
+    @field_serializer("start_time", "end_time", "created_at")
+    def serialize_dt(self, v: datetime) -> str:
+        return self._ensure_utc(v)

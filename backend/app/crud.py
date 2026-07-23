@@ -102,8 +102,8 @@ def get_slots_for_date(db: Session, event_type_id: str, date: datetime.date):
     while current + timedelta(minutes=duration) <= day_end:
         slot_end = current + timedelta(minutes=duration)
 
-        # Пропускаем слоты, которые уже закончились
-        if slot_end <= now:
+        # Пропускаем слоты, которые уже начались
+        if current <= now:
             current = slot_end
             continue
 
