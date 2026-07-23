@@ -10,6 +10,13 @@ import { BookingForm } from "@/components/BookingForm"
 import { listEventTypes, listSlots, createBooking } from "@/api/client"
 import type { EventType, Slot } from "@/types/api"
 
+function utcToLocalTime(date: string, time: string): string {
+  return new Date(`${date}T${time}:00Z`).toLocaleTimeString("ru-RU", {
+    hour: "2-digit",
+    minute: "2-digit",
+  })
+}
+
 type Step = "select-type" | "select-slot" | "fill-form" | "success"
 
 export function HomePage() {
@@ -76,7 +83,7 @@ export function HomePage() {
             <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
             <h2 className="text-2xl font-semibold mb-2">Запись подтверждена!</h2>
             <p className="text-muted-foreground mb-6">
-              Вы записаны на {selectedEventType?.name} · {selectedSlot?.date} · {selectedSlot?.startTime}
+              Вы записаны на {selectedEventType?.name} · {selectedSlot?.date} · {selectedSlot ? utcToLocalTime(selectedSlot.date, selectedSlot.startTime) : ""}
             </p>
             <Button onClick={handleReset} className="w-full">
               Записаться ещё

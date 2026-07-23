@@ -5,6 +5,13 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { Slot, EventType } from "@/types/api"
 
+function utcToLocalTime(date: string, time: string): string {
+  return new Date(`${date}T${time}:00Z`).toLocaleTimeString("ru-RU", {
+    hour: "2-digit",
+    minute: "2-digit",
+  })
+}
+
 interface BookingFormProps {
   eventType: EventType
   slot: Slot
@@ -32,7 +39,7 @@ export function BookingForm({ eventType, slot, onSubmit, onCancel, isLoading }: 
         <div className="mb-4 p-3 bg-muted rounded-md text-sm">
           <div><strong>{eventType.name}</strong></div>
           <div className="text-muted-foreground">
-            {slot.date} · {slot.startTime} – {slot.endTime}
+            {slot.date} · {utcToLocalTime(slot.date, slot.startTime)} – {utcToLocalTime(slot.date, slot.endTime)}
           </div>
         </div>
 

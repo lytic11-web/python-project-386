@@ -1,9 +1,8 @@
 import { useState } from "react"
-import { format, addDays, isSameDay, parseISO } from "date-fns"
+import { format, addDays, isSameDay } from "date-fns"
 import { ru } from "date-fns/locale"
 import { ChevronLeft, ChevronRight, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import type { Slot, EventType } from "@/types/api"
 
 interface SlotPickerProps {
@@ -13,6 +12,13 @@ interface SlotPickerProps {
   onDateChange: (date: Date) => void
   onSlotSelect: (slot: Slot) => void
   selectedSlot: Slot | null
+}
+
+function utcToLocalTime(date: string, time: string): string {
+  return new Date(`${date}T${time}:00Z`).toLocaleTimeString("ru-RU", {
+    hour: "2-digit",
+    minute: "2-digit",
+  })
 }
 
 export function SlotPicker({
@@ -77,7 +83,7 @@ export function SlotPicker({
             disabled={!slot.available}
             onClick={() => onSlotSelect(slot)}
           >
-            {slot.startTime}
+            {utcToLocalTime(slot.date, slot.startTime)}
             {selectedSlot?.startTime === slot.startTime &&
               selectedSlot?.date === slot.date && (
                 <Check className="ml-1 h-3 w-3" />
