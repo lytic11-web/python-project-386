@@ -83,12 +83,12 @@ def get_slots_for_date(db: Session, event_type_id: str, date: datetime.date):
     start_hour, start_minute = 9, 0
     end_hour, end_minute = 18, 0
 
-    current = datetime.combine(date, datetime.min.time().replace(hour=start_hour, minute=start_minute), tzinfo=timezone.utc)
-    day_end = datetime.combine(date, datetime.min.time().replace(hour=end_hour, minute=end_minute), tzinfo=timezone.utc)
+    current = datetime.combine(date, datetime.min.time().replace(hour=start_hour, minute=start_minute))
+    day_end = datetime.combine(date, datetime.min.time().replace(hour=end_hour, minute=end_minute))
 
     # Получаем все бронирования на эту дату (любого типа события)
-    day_start = datetime.combine(date, datetime.min.time(), tzinfo=timezone.utc)
-    day_end_dt = datetime.combine(date, datetime.max.time().replace(microsecond=0), tzinfo=timezone.utc)
+    day_start = datetime.combine(date, datetime.min.time())
+    day_end_dt = datetime.combine(date, datetime.max.time().replace(microsecond=0))
 
     existing_bookings = db.query(models.Booking).filter(
         and_(
@@ -97,7 +97,7 @@ def get_slots_for_date(db: Session, event_type_id: str, date: datetime.date):
         )
     ).all()
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
 
     while current + timedelta(minutes=duration) <= day_end:
         slot_end = current + timedelta(minutes=duration)
@@ -143,20 +143,22 @@ def create_booking(db: Session, booking: schemas.BookingCreate):
     if not event_type:
         return None, "event_type_not_found"
 
-    # Проверяем, что время в пределах 14 дней
-    now = datetime.now(timezone.utc)
-    max_date = now + timedelta(days=14)
-    if booking.start_time < now or booking.start_time > max_date:
+    # Приводим к naive UTC для совместимости с SQLite
+    start_naive = booking.start_time.replace(tzinfo=None)
+    now_naive = datetime.now(timezone.utc).replace(tzinfo=None)
+    max_date = now_naive + timedelta(days=14)
+
+    if start_naive < now_naive or start_naive > max_date:
         return None, "out_of_booking_window"
 
-    # Вычисляем end_time
-    end_time = booking.start_time + timedelta(minutes=event_type.duration_minutes)
+    # Вычисляем end_time (naive UTC)
+    end_time = start_naive + timedelta(minutes=event_type.duration_minutes)
 
     # Проверяем, не занят ли слот (любым типом события)
     existing = db.query(models.Booking).filter(
         and_(
             models.Booking.start_time < end_time,
-            models.Booking.end_time > booking.start_time,
+            models.Booking.end_time > start_naive,
         )
     ).first()
 
@@ -166,7 +168,7 @@ def create_booking(db: Session, booking: schemas.BookingCreate):
     db_booking = models.Booking(
         event_type_id=booking.event_type_id,
         event_type_name=event_type.name,
-        start_time=booking.start_time,
+        start_time=start_naive,
         end_time=end_time,
         guest_name=booking.guest_name,
         guest_email=booking.guest_email,
