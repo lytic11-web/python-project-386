@@ -54,7 +54,7 @@ export function HomePage() {
     if (!selectedEventType || !selectedSlot) return
     bookingMutation.mutate({
       eventTypeId: selectedEventType.id,
-      startTime: new Date(`${selectedSlot.date}T${selectedSlot.startTime}:00`).toISOString(),
+      startTime: new Date(`${selectedSlot.date}T${selectedSlot.startTime}:00Z`).toISOString(),
       guestName: data.guestName,
       guestEmail: data.guestEmail,
       guestNotes: data.guestNotes,
