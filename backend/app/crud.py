@@ -97,8 +97,15 @@ def get_slots_for_date(db: Session, event_type_id: str, date: datetime.date):
         )
     ).all()
 
+    now = datetime.now(timezone.utc)
+
     while current + timedelta(minutes=duration) <= day_end:
         slot_end = current + timedelta(minutes=duration)
+
+        # Пропускаем слоты, которые уже закончились
+        if slot_end <= now:
+            current = slot_end
+            continue
 
         # Проверяем, не пересекается ли слот с существующими бронированиями
         available = True
