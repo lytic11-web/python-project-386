@@ -1,0 +1,225 @@
+openapi: 3.0.3
+info:
+  title: "Запись на звонок — API"
+  version: 1.0.0
+paths:
+  /owner:
+    get:
+      operationId: Owner_get
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Owner"
+  /event-types:
+    get:
+      operationId: EventTypes_list
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EventType"
+    post:
+      operationId: EventTypes_create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventTypeCreate"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventType"
+  /event-types/{id}:
+    get:
+      operationId: EventTypeDetail_get
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventType"
+    patch:
+      operationId: EventTypeDetail_update
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventTypeUpdate"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventType"
+    delete:
+      operationId: EventTypeDetail_delete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204": {}
+  /event-types/{id}/slots:
+    get:
+      operationId: Slots_list
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Slot"
+  /bookings:
+    get:
+      operationId: Bookings_list
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Booking"
+    post:
+      operationId: Bookings_create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookingCreate"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+  /bookings/{id}:
+    get:
+      operationId: BookingDetail_get
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+    delete:
+      operationId: BookingDetail_delete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204": {}
+components:
+  schemas:
+    Owner:
+      type: object
+      required: [id, name, email]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        email: { type: string }
+        description: { type: string }
+    EventType:
+      type: object
+      required: [id, name, durationMinutes]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        description: { type: string }
+        durationMinutes: { type: integer, format: int32 }
+    EventTypeCreate:
+      type: object
+      required: [name, durationMinutes]
+      properties:
+        name: { type: string }
+        description: { type: string }
+        durationMinutes: { type: integer, format: int32 }
+    EventTypeUpdate:
+      type: object
+      properties:
+        name: { type: string }
+        description: { type: string }
+        durationMinutes: { type: integer, format: int32 }
+    Slot:
+      type: object
+      required: [date, startTime, endTime, available]
+      properties:
+        date: { type: string, format: date }
+        startTime: { type: string }
+        endTime: { type: string }
+        available: { type: boolean }
+    Booking:
+      type: object
+      required: [id, eventTypeId, eventTypeName, startTime, endTime, guestName, guestEmail, createdAt]
+      properties:
+        id: { type: string }
+        eventTypeId: { type: string }
+        eventTypeName: { type: string }
+        startTime: { type: string, format: date-time }
+        endTime: { type: string, format: date-time }
+        guestName: { type: string }
+        guestEmail: { type: string }
+        guestNotes: { type: string }
+        createdAt: { type: string, format: date-time }
+    BookingCreate:
+      type: object
+      required: [eventTypeId, startTime, guestName, guestEmail]
+      properties:
+        eventTypeId: { type: string }
+        startTime: { type: string, format: date-time }
+        guestName: { type: string }
+        guestEmail: { type: string }
+        guestNotes: { type: string }
+    ApiError:
+      type: object
+      required: [status, code, message]
+      properties:
+        status: { type: integer, format: int32 }
+        code: { type: string }
+        message: { type: string }
