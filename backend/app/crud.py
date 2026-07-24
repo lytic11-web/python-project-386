@@ -79,9 +79,9 @@ def get_slots_for_date(db: Session, event_type_id: str, date: datetime.date):
     duration = event_type.duration_minutes
     slots = []
 
-    # Генерируем слоты с 09:00 до 18:00
-    start_hour, start_minute = 9, 0
-    end_hour, end_minute = 18, 0
+    # Генерируем слоты с 09:00 до 18:00 по UTC+3 (06:00–15:00 UTC)
+    start_hour, start_minute = 6, 0
+    end_hour, end_minute = 15, 0
 
     current = datetime.combine(date, datetime.min.time().replace(hour=start_hour, minute=start_minute))
     day_end = datetime.combine(date, datetime.min.time().replace(hour=end_hour, minute=end_minute))
