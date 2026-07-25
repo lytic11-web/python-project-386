@@ -10,10 +10,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    services:
-      # Backend runs as a service, not in Docker
-      # We'll start it directly in the steps
-
     steps:
       - uses: actions/checkout@v4
 
@@ -24,33 +20,24 @@ jobs:
 
       - name: Install backend dependencies
         run: |
-          cd backend
-          pip install -U pip
-          pip install -r <(echo "fastapi>=0.100.0
-            uvicorn[standard]>=0.30.0
-            sqlalchemy>=2.0.0
-            pydantic>=2.0.0
-            python-multipart>=0.0.5
-            email-validator>=2.0.0")
+          pip install fastapi uvicorn[standard] sqlalchemy pydantic python-multipart email-validator
 
       - name: Start backend
         run: |
           cd backend
           uvicorn app.main:app --host 0.0.0.0 --port 8000 &
           sleep 3
-          curl -s http://localhost:8000/owner || echo "Backend failed to start"
+          curl -s --retry 5 --retry-delay 2 http://localhost:8000/owner
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
-          cache-dependency-path: frontend/package-lock.json
 
       - name: Install frontend dependencies
         run: |
           cd frontend
-          npm ci
+          npm install
 
       - name: Install Playwright browsers
         run: |
