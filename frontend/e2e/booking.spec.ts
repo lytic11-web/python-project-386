@@ -1,5 +1,14 @@
 import { test, expect } from "@playwright/test";
 
+const cleanupEventTypes = async (page: import("@playwright/test").Page, names: string[]) => {
+  const existing = await (await page.request.get("/api/event-types")).json();
+  for (const et of existing) {
+    if (names.includes(et.name)) {
+      await page.request.delete(`/api/event-types/${et.id}`).catch(() => {});
+    }
+  }
+};
+
 test.describe("Booking flow", () => {
   test("full booking scenario: create event type → book slot → verify in admin", async ({ page }) => {
     // 1. Admin creates an event type
@@ -12,13 +21,14 @@ test.describe("Booking flow", () => {
     await page.locator("#event-type-duration").fill("30");
     await page.getByRole("button", { name: "Создать" }).click();
 
-    await expect(page.getByText("Консультация")).toBeVisible();
+    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole("heading", { name: "Консультация" })).toBeVisible();
     await expect(page.getByText("30 мин")).toBeVisible();
 
     // 2. Guest views event types and selects one
     await page.goto("/");
     await expect(page.getByRole("heading", { name: "Запишитесь на встречу" })).toBeVisible();
-    await expect(page.getByText("Консультация")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Консультация" })).toBeVisible();
 
     await page.getByRole("button", { name: "Выбрать" }).click();
 
@@ -51,7 +61,7 @@ test.describe("Booking flow", () => {
 
     // 6. Admin sees the booking
     await page.goto("/admin");
-    await expect(page.getByText("Консультация")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Консультация" })).toBeVisible();
     await expect(page.getByText("Иван Иванов")).toBeVisible();
     await expect(page.getByText("ivan@example.com")).toBeVisible();
   });
@@ -63,7 +73,8 @@ test.describe("Booking flow", () => {
     await page.locator("#event-type-name").fill("Double Test");
     await page.locator("#event-type-duration").fill("30");
     await page.getByRole("button", { name: "Создать" }).click();
-    await expect(page.getByText("Double Test")).toBeVisible();
+    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole("heading", { name: "Double Test" })).toBeVisible();
 
     // Get the event type ID via API
     const eventTypes = await (await page.request.get("/api/event-types")).json();
@@ -95,6 +106,7 @@ test.describe("Booking flow", () => {
   });
 
   test("event type CRUD in admin", async ({ page }) => {
+    await cleanupEventTypes(page, ["CRUD Test", "CRUD Test Updated"]);
     await page.goto("/admin");
 
     // Create
@@ -102,16 +114,18 @@ test.describe("Booking flow", () => {
     await page.locator("#event-type-name").fill("CRUD Test");
     await page.locator("#event-type-duration").fill("45");
     await page.getByRole("button", { name: "Создать" }).click();
-    await expect(page.getByText("CRUD Test")).toBeVisible();
+    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole("heading", { name: "CRUD Test" })).toBeVisible();
 
     // Edit - click the edit icon button
-    await page.locator("button:has(svg.lucide-edit3)").first().click();
+    await page.locator("button").filter({ has: page.locator('[class*="lucide-edit3"]') }).first().click();
     await page.locator("#event-type-name").fill("CRUD Test Updated");
     await page.getByRole("button", { name: "Сохранить" }).click();
-    await expect(page.getByText("CRUD Test Updated")).toBeVisible();
+    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole("heading", { name: "CRUD Test Updated" })).toBeVisible();
 
     // Delete - click the trash icon button
-    await page.locator("button:has(svg.lucide-trash2)").first().click();
-    await expect(page.getByText("CRUD Test Updated")).not.toBeVisible();
+    await page.locator("button").filter({ has: page.locator('[class*="lucide-trash2"]') }).first().click();
+    await expect(page.getByRole("heading", { name: "CRUD Test Updated" })).not.toBeVisible();
   });
 });
