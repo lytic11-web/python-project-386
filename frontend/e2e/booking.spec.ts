@@ -117,15 +117,21 @@ test.describe("Booking flow", () => {
     await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 10000 });
     await expect(page.getByRole("heading", { name: "CRUD Test" })).toBeVisible();
 
-    // Edit - click the edit icon button
-    await page.locator("button").filter({ has: page.locator('[class*="lucide-edit-3"]') }).first().click();
+    // Edit - click the edit button in the "CRUD Test" card
+    const crudCard = page.locator('div.grid.gap-4 > div').filter({
+      has: page.getByRole("heading", { name: "CRUD Test" })
+    }).first();
+    await crudCard.locator('button').first().click();
     await page.locator("#event-type-name").fill("CRUD Test Updated");
     await page.getByRole("button", { name: "Сохранить" }).click();
     await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 10000 });
     await expect(page.getByRole("heading", { name: "CRUD Test Updated" })).toBeVisible();
 
-    // Delete - click the trash icon button
-    await page.locator("button").filter({ has: page.locator('[class*="lucide-trash-2"]') }).first().click();
+    // Delete - click the trash button in the "CRUD Test Updated" card
+    const updatedCard = page.locator('div.grid.gap-4 > div').filter({
+      has: page.getByRole("heading", { name: "CRUD Test Updated" })
+    }).first();
+    await updatedCard.locator('button').nth(1).click();
     await expect(page.getByRole("heading", { name: "CRUD Test Updated" })).not.toBeVisible();
   });
 });
