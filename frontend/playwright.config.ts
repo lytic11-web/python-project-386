@@ -21,13 +21,13 @@ export default defineConfig({
     {
       command: "cd ../backend && uv run uvicorn app.main:app --host 0.0.0.0 --port 8000",
       port: 8000,
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: true,
       timeout: 30000,
     },
     {
       command: "npm run dev",
       port: 5173,
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: true,
       timeout: 30000,
     },
   ],
