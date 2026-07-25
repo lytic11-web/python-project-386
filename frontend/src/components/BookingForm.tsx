@@ -45,8 +45,9 @@ export function BookingForm({ eventType, slot, onSubmit, onCancel, isLoading }: 
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="text-sm font-medium">Ваше имя</label>
+            <label htmlFor="guest-name" className="text-sm font-medium">Ваше имя</label>
             <Input
+              id="guest-name"
               value={guestName}
               onChange={(e) => setGuestName(e.target.value)}
               placeholder="Иван Иванов"
@@ -54,8 +55,9 @@ export function BookingForm({ eventType, slot, onSubmit, onCancel, isLoading }: 
             />
           </div>
           <div>
-            <label className="text-sm font-medium">Email</label>
+            <label htmlFor="guest-email" className="text-sm font-medium">Email</label>
             <Input
+              id="guest-email"
               type="email"
               value={guestEmail}
               onChange={(e) => setGuestEmail(e.target.value)}
@@ -64,8 +66,9 @@ export function BookingForm({ eventType, slot, onSubmit, onCancel, isLoading }: 
             />
           </div>
           <div>
-            <label className="text-sm font-medium">Комментарий (опционально)</label>
+            <label htmlFor="guest-notes" className="text-sm font-medium">Комментарий (опционально)</label>
             <Textarea
+              id="guest-notes"
               value={guestNotes}
               onChange={(e) => setGuestNotes(e.target.value)}
               placeholder="Дополнительная информация..."

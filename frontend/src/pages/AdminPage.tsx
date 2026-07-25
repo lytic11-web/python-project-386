@@ -234,8 +234,9 @@ export function AdminPage() {
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="text-sm font-medium">Название</label>
+              <label htmlFor="event-type-name" className="text-sm font-medium">Название</label>
               <Input
+                id="event-type-name"
                 value={eventTypeForm.name}
                 onChange={(e) =>
                   setEventTypeForm({ ...eventTypeForm, name: e.target.value })
@@ -245,8 +246,9 @@ export function AdminPage() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium">Описание</label>
+              <label htmlFor="event-type-description" className="text-sm font-medium">Описание</label>
               <Textarea
+                id="event-type-description"
                 value={eventTypeForm.description}
                 onChange={(e) =>
                   setEventTypeForm({ ...eventTypeForm, description: e.target.value })
@@ -256,8 +258,9 @@ export function AdminPage() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium">Длительность (мин)</label>
+              <label htmlFor="event-type-duration" className="text-sm font-medium">Длительность (мин)</label>
               <Input
+                id="event-type-duration"
                 type="number"
                 min={15}
                 max={480}
