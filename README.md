@@ -38,6 +38,10 @@ npm run test:e2e
 
 Документация API — `http://localhost:8000/docs` (Swagger UI).
 
+## Деплой
+
+Приложение развёрнуто на Render: [https://python-project-386.onrender.com](https://python-project-386.onrender.com)
+
 ## CI
 
 GitHub Actions: запуск e2e-тестов на каждый push в main.
