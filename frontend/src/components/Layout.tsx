@@ -21,7 +21,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 location.pathname === "/" ? "text-primary" : "text-muted-foreground"
               )}
             >
-              Запись
+              Гость
             </Link>
             <Link
               to="/admin"
@@ -31,7 +31,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               )}
             >
               <Settings className="h-4 w-4" />
-              Управление
+              Владелец
             </Link>
           </nav>
         </div>

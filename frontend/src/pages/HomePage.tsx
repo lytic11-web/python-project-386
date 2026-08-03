@@ -5,6 +5,7 @@ import { CheckCircle, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { EventTypeCard } from "@/components/EventTypeCard"
+import { LiveClock } from "@/components/LiveClock"
 import { SlotPicker } from "@/components/SlotPicker"
 import { BookingForm } from "@/components/BookingForm"
 import { listEventTypes, listSlots, createBooking } from "@/api/client"
@@ -99,6 +100,7 @@ export function HomePage() {
       {step === "select-type" && (
         <div className="space-y-6">
           <div>
+            <LiveClock />
             <h1 className="text-3xl font-bold mb-2">Запишитесь на встречу</h1>
             <p className="text-muted-foreground">
               Выберите тип встречи и подходящее время

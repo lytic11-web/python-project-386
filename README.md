@@ -16,8 +16,8 @@
 ```bash
 # Backend
 cd backend
-pip install fastapi uvicorn[standard] sqlalchemy pydantic python-multipart email-validator
-uvicorn app.main:app --host 0.0.0.0 --port 8000
+uv sync
+uv run uvicorn app.main:app --host 0.0.0.0 --port 8000
 
 # Frontend (в другом терминале)
 cd frontend
@@ -44,4 +44,4 @@ npm run test:e2e
 
 ## CI
 
-GitHub Actions: запуск e2e-тестов на каждый push в main.
+GitHub Actions: запуск e2e-тестов на каждый push в main. Автоматический release-PR с changelog через Release Please (Conventional Commits).
